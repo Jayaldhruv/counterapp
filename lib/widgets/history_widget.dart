@@ -1,67 +1,21 @@
+import 'package:counterapp/widgets/counter_inherited_widget.dart';
 import 'package:flutter/material.dart';
 
-//Keeps track of the counter values whenever it is increased
+///Keeps track of the counter values whenever it is increased
 class HistoryWidget extends StatefulWidget {
-  //the counters history.
-  final List<int> increasesHistory;
-
-  //Creates an [HistoryWidget] from the given [increasesHistory]
+  ///Creates an [HistoryWidget] widget
   const HistoryWidget({
     Key? key,
-    required this.increasesHistory,
   }) : super(key: key);
 
   @override
   State<HistoryWidget> createState() => _HistoryWidgetState();
 }
 
+///The state of the []HistoryWidget] widget.
 class _HistoryWidgetState extends State<HistoryWidget> {
-  //The [ListView] scroll controller.
+  ///The [ListView] scroll controller.
   final controller = ScrollController();
-
-  //Manually caching the list
-  late ListView list = buildList();
-
-  //Building the list
-  ListView buildList() {
-    return ListView.separated(
-      key: const Key('HistoryWidget-ListView'),
-      controller: controller,
-      scrollDirection: Axis.horizontal,
-      itemBuilder: (_, index) {
-        return Card(
-          elevation: 4,
-          shadowColor: Colors.blueAccent,
-          child: SizedBox(
-            width: 40,
-            height: 40,
-            child: Center(
-              child: Text('${widget.increasesHistory[index]}'),
-            ),
-          ),
-        );
-      },
-      separatorBuilder: (_, __) => const SizedBox(width: 10),
-      itemCount: widget.increasesHistory.length,
-    );
-  }
-
-  @override
-  void didUpdateWidget(covariant HistoryWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.increasesHistory.length != oldWidget.increasesHistory.length) {
-      //Updating the list
-      list = buildList();
-
-      //Moving it to the end
-      controller.animateTo(
-        controller.position.maxScrollExtent + 50 + 10,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.ease,
-      );
-    }
-  }
 
   @override
   void dispose() {
@@ -72,6 +26,8 @@ class _HistoryWidgetState extends State<HistoryWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final counterState = CounterState.of(context).model;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -87,11 +43,61 @@ class _HistoryWidgetState extends State<HistoryWidget> {
             ),
             child: SizedBox(
               height: 40,
-              child: list,
+              child: AnimatedBuilder(
+                animation: counterState,
+                builder: (context, _) {
+                  if (counterState.history.isNotEmpty) {
+                    //Moving the scroll controller to the end
+                    controller.animateTo(
+                      controller.position.maxScrollExtent + 50 + 10,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.ease,
+                    );
+                  }
+
+                  return ListView.separated(
+                    key: const Key('HistoryWidget-ListView'),
+                    controller: controller,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: counterState.history.length,
+                    itemBuilder: (_, index) {
+                      return Card(
+                        elevation: 4,
+                        shadowColor: Colors.blueAccent,
+                        child: SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Center(
+                            child: Text('${counterState.history[index]}'),
+                          ),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                  );
+                },
+              ),
             ),
           ),
         ),
       ],
     );
   }
+
+  // @override
+  // void didUpdateWidget(covariant HistoryWidget oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //
+  //   if (widget.increasesHistory.length != oldWidget.increasesHistory.length) {
+  //     //Updating the list
+  //     list = buildList();
+  //
+  //     //Moving it to the end
+  //     controller.animateTo(
+  //       controller.position.maxScrollExtent + 50 + 10,
+  //       duration: const Duration(milliseconds: 400),
+  //       curve: Curves.ease,
+  //     );
+  //   }
+  // }
 }
