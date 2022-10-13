@@ -1,8 +1,8 @@
-//This widget contains the title of the app
 import 'package:flutter/material.dart';
 
+///This widget contains the title of the app
 class AppTitle extends StatelessWidget {
-  //Creates an [Apptitle] widget
+  ///Creates an [AppTitle] widget
   const AppTitle({
     Key? key,
   }) : super(key: key);
@@ -12,7 +12,7 @@ class AppTitle extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: const [
-        //the icon
+        ///The icon
         Icon(
           Icons.remove,
           color: Colors.redAccent,
